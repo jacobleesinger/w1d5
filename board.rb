@@ -4,31 +4,44 @@ class Board
   def initialize size = 10, bombs = 10
     @size = size
     @grid = Array.new(size) {Array.new(size) {Tile.new(0, self)}}
-    seed_bombs(bombs)
+    set_tile_values(grid, bombs)
   end
 
-  def seed_bombs bombs
+  def set_tile_values(grid, bombs)
+    seed_bombs(bombs)
+    set_bomb_counts(grid)
+  end
+
+  def seed_bombs(bombs)
     count = 0
     until count == bombs
-      spot = @grid.sample.sample
-debugger
+      spot = grid.sample.sample
+# debugger
       unless spot.is_bomb
         spot.set_as_bomb
-        spot.neighbors.each { |tile| tile.value += 1 unless tile.is_bomb}
       end
       count += 1
     end
-    'seeded!'
   end
+
+  def set_bomb_counts(grid)
+    grid.each do |row|
+      row.each do |tile|
+        unless tile.is_bomb
+          tile.value = neighbor_bomb_count(tile)
+        end
+      end
+    end
+  end
+
 
   def render
     @grid.each do |row|
       row.each do |tile|
-        print tile.face_value.to_s + " "
+        print tile.to_s
       end
       puts
     end
-    nil
   end
 
   def [] (row, column)
@@ -46,29 +59,8 @@ debugger
     true
   end
 
-  def each &prc
-    @grid.each do |row|
-      row.each do |el|
-        prc.call(el)
-      end
-    end
-  end
-
-  def every_bomb_flagged?
-
-  end
-
-  def every_non_bomb_revealed?
-    each do |tile|
-      unless tile.is_bomb
-        return false unless tile.revealed
-      end
-    end
-    true
-  end
-
-  def get_neighbors_of tile
-    row, col = find_tile_location tile
+  def neighbors(tile)
+    row, col = find_tile_location(tile)
     # debugger
     neighbor_positions =[
       [row-1, col-1],
@@ -86,7 +78,12 @@ debugger
 
   end
 
-  def find_tile_location tile
+  def neighbor_bomb_count(tile)
+    new_neighbors = neighbors(tile)
+    new_neighbors.select { |neighbor| neighbor.is_bomb }.count
+  end
+
+  def find_tile_location(tile)
     @grid.each_with_index do |line,row|
       line.each_with_index do |other_tile, col|
         return [row, col] if tile == other_tile
@@ -95,7 +92,7 @@ debugger
     raise 'tile not found!'
   end
 
-  def get_tile_at_pos pos
+  def get_tile_at_pos(pos)
     self[*pos]
   end
 
