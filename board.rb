@@ -1,18 +1,16 @@
-require 'byebug'
+# require 'byebug'
 class Board
   attr_reader :grid
   def initialize size = 10, bombs = 5
     @size = size
     @grid = Array.new(size) {Array.new(size) {Tile.new(0, self)}}
-    #seed_bombs(bombs)
+    # seed_bombs(bombs)
   end
 
   def seed_bombs bombs
     count = 0
     until count == bombs
       spot = @grid.sample.sample
-      p spot
-      gets
       unless spot.is_bomb
         spot.set_as_bomb
         spot.neighbors.each { |tile| tile.value += 1 unless tile.is_bomb}
@@ -82,8 +80,8 @@ class Board
       [row+1, col+1],
     ]
 
-    neighbor_positions.select!{|pos| valid_pos?(pos)}
-    neighbor_positions.map { |position| self[*position]}
+    valid_neighbor_positions = neighbor_positions.select {|pos| valid_pos?(pos)}
+    valid_neighbor_positions.map { |position| self[*position]}
 
   end
 
@@ -94,6 +92,10 @@ class Board
       end
     end
     raise 'tile not found!'
+  end
+
+  def get_tile_at_pos pos
+    self[*pos]
   end
 
   def god_view
