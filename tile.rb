@@ -33,4 +33,13 @@ class Tile
   def neighbors
     @board.get_neighbors_of self
   end
+
+  def location
+    @board.grid.each_with_index do |line,row|
+      line.each_with_index do |other_tile, col|
+        return [row, col] if self == other_tile
+      end
+    end
+    raise 'tile not found!'
+  end
 end

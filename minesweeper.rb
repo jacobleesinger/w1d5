@@ -5,8 +5,8 @@ class Game
 
   attr_reader :board
 
-  def initialize
-    @board = Board.new
+  def initialize( size = 10, bombs = 5)
+    @board = Board.new(size, bombs)
   end
 
   def play

@@ -1,16 +1,17 @@
-# require 'byebug'
+require 'byebug'
 class Board
   attr_reader :grid
-  def initialize size = 10, bombs = 5
+  def initialize size = 10, bombs = 10
     @size = size
     @grid = Array.new(size) {Array.new(size) {Tile.new(0, self)}}
-    # seed_bombs(bombs)
+    seed_bombs(bombs)
   end
 
   def seed_bombs bombs
     count = 0
     until count == bombs
       spot = @grid.sample.sample
+debugger
       unless spot.is_bomb
         spot.set_as_bomb
         spot.neighbors.each { |tile| tile.value += 1 unless tile.is_bomb}
